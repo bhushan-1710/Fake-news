@@ -1,0 +1,30 @@
+# Environment variables
+.env
+
+# Trained model files (regenerate with train_model.py)
+model/model.pkl
+model/vectorizer.pkl
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

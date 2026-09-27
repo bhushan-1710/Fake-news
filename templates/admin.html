@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Dashboard - Fake News Detector">
+    <title>Admin Dashboard - Fake News Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="{{ url_for('home') }}" class="nav-brand">📰 Fake News Detector</a>
+            <a href="{{ url_for('admin_logout') }}" class="nav-link">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="dashboard-section">
+            <h1>Admin Dashboard</h1>
+
+            <!-- Statistics -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total }}</div>
+                    <div class="stat-label">Total Predictions</div>
+                </div>
+                <div class="stat-card stat-fake">
+                    <div class="stat-number">{{ fake_count }}</div>
+                    <div class="stat-label">Fake</div>
+                </div>
+                <div class="stat-card stat-real">
+                    <div class="stat-number">{{ real_count }}</div>
+                    <div class="stat-label">Real</div>
+                </div>
+            </div>
+
+            <!-- Prediction History Table -->
+            <div class="card table-card">
+                <h2>Prediction History</h2>
+
+                {% if predictions %}
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Headline</th>
+                                <th>Prediction</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in predictions %}
+                            <tr>
+                                <td>{{ row.id }}</td>
+                                <td class="headline-cell">{{ row.headline }}</td>
+                                <td>
+                                    <span class="table-badge badge-{{ row.prediction | lower }}">
+                                        {{ row.prediction }}
+                                    </span>
+                                </td>
+                                <td class="date-cell">
+                                    {{ row.created_at[:10] if row.created_at else "N/A" }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="empty-message">No predictions recorded yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Actions -->
+            <a href="{{ url_for('home') }}" class="btn btn-secondary">
+                ← Back to Home
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>Fake News Detector &mdash; College Project &copy; 2026</p>
+        </div>
+    </footer>
+</body>
+</html>
