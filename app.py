@@ -24,6 +24,13 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "fake-news-detector-secret-key-change-me")
 
+def safe_print(*args, **kwargs):
+    """Safely print without raising OSError on disconnected Windows console handles."""
+    try:
+        print(*args, **kwargs)
+    except Exception:
+        pass
+
 # ── Load ML model and vectorizer ──────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "model", "model.pkl")
@@ -46,7 +53,7 @@ try:
     from supabase import create_client
 
     SUPABASE_URL = os.getenv("SUPABASE_URL")
-    SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+    SUPABASE_KEY = os.getenv("SUPABASE_SECRET_KEY") or os.getenv("SUPABASE_KEY")
 
     if SUPABASE_URL and SUPABASE_KEY:
         supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -68,7 +75,7 @@ ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
 def save_prediction(headline, prediction):
     """Save a prediction record to Supabase. Fails silently if DB unavailable."""
     if supabase_client is None:
-        print("  Supabase not available — skipping save.")
+        safe_print("  Supabase not available — skipping save.")
         return False
 
     try:
@@ -78,10 +85,10 @@ def save_prediction(headline, prediction):
             "created_at": datetime.now().isoformat()
         }
         supabase_client.table("predictions").insert(data).execute()
-        print(f"  Prediction saved to Supabase.")
+        safe_print("  Prediction saved to Supabase.")
         return True
     except Exception as e:
-        print(f"  ERROR saving to Supabase: {e}")
+        safe_print(f"  ERROR saving to Supabase: {e}")
         return False
 
 
@@ -100,7 +107,7 @@ def get_predictions():
         )
         return response.data
     except Exception as e:
-        print(f"  ERROR fetching from Supabase: {e}")
+        safe_print(f"  ERROR fetching from Supabase: {e}")
         return []
 
 
@@ -146,13 +153,13 @@ def predict():
     headline_tfidf = vectorizer.transform([headline_lower])
     prediction = model.predict(headline_tfidf)[0]  # "FAKE" or "REAL"
 
-    print(f"  Headline: {headline}")
-    print(f"  Prediction: {prediction}")
+    safe_print(f"  Headline: {headline}")
+    safe_print(f"  Prediction: {prediction}")
 
     # Save to Supabase (non-blocking — doesn't affect result display)
     db_saved = save_prediction(headline, prediction)
     if not db_saved:
-        print("  Note: Prediction was not saved to database.")
+        safe_print("  Note: Prediction was not saved to database.")
 
     return render_template("result.html", headline=headline, prediction=prediction)
 
