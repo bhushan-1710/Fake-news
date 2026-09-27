@@ -1,9 +1,6 @@
 # Environment variables
 .env
 
-# Trained model files (regenerate with train_model.py)
-model/model.pkl
-model/vectorizer.pkl
 
 # Python
 __pycache__/

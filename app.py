@@ -25,8 +25,9 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "fake-news-detector-secret-key-change-me")
 
 # ── Load ML model and vectorizer ──────────────────────────────────────
-MODEL_PATH = os.path.join("model", "model.pkl")
-VECTORIZER_PATH = os.path.join("model", "vectorizer.pkl")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "model", "model.pkl")
+VECTORIZER_PATH = os.path.join(BASE_DIR, "model", "vectorizer.pkl")
 
 model = None
 vectorizer = None
